@@ -1,0 +1,154 @@
+// Eiffel Tower: https://cults3d.com/es/modelo-3d/arte/eiffel-tower-tanase_constantin88
+//Source code: https://threejs.org/
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset=UTF-8 />
+  <title>Three.js Realistic Rain Tutorial by Red Stapler</title>
+  <style>
+    body {
+      overflow: hidden;
+      margin: 0px;
+    }
+  </style>
+</head>
+
+<body>
+  <script src="three/build/three.js"></script>
+  <script src="three/examples/js/loaders/STLLoader.js"></script>
+  <script type="module" src="three/examples/js/controls/OrbitControls.js"></script>
+  <script>
+    var scene, camera, renderer;
+
+
+    function init() {
+
+
+      scene = new THREE.Scene();
+      const texture1 = new THREE.TextureLoader().load('sky.jpg');
+      scene.background = texture1;
+      camera = new THREE.PerspectiveCamera(105, window.innerWidth / window.innerHeight, 0.1, 10000);
+      camera.position.z = 30;
+      camera.position.y = 00;
+
+
+      renderer = new THREE.WebGLRenderer();
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.shadowMap.enabled = true;
+      renderer.physicallyCorrectLights = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      document.body.appendChild(renderer.domElement);
+      
+
+      const texture = new THREE.TextureLoader().load('texture1.jpg');
+      const material = new THREE.MeshPhongMaterial({ map: texture });
+      meshFloor = new THREE.Mesh(new THREE.PlaneBufferGeometry(250, 250), material);
+      meshFloor.rotation.set(-Math.PI / 2, 0, 0); // Rotate the floor 90 degrees
+      meshFloor.position.set(0, -5, 0);
+      scene.add(meshFloor);
+
+      const geometry = new THREE.SphereGeometry(8, 32, 16);
+      const material1 = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+      sphere1 = new THREE.Mesh(geometry, material1);
+      sphere1.position.set(15, 15, 0);
+      sphere1.receiveShadow = true;
+      sphere1.castShadow = true;
+    
+      obj = new THREE.Object3D();
+      obj.add(sphere1);
+      scene.add(obj);
+
+      obj.receiveShadow = true;
+      obj.castShadow = true;
+
+      meshFloor.receiveShadow = true;
+      meshFloor.castShadow = false;
+
+      const listener = new THREE.AudioListener();
+      camera.add(listener);
+
+  
+      const sound = new THREE.Audio(listener);
+
+  
+      const audioLoader = new THREE.AudioLoader();
+      audioLoader.load('paris.mp3', function (buffer) {
+        sound.setBuffer(buffer);
+        sound.setLoop(true);
+        sound.setVolume(1);
+        sound.play();
+      });
+
+
+
+      let loader = new THREE.STLLoader();
+
+      loader.load('EiffelTower.stl', (model) => {
+        object11 = new THREE.Mesh(
+          model,
+          new THREE.MeshLambertMaterial({ color: "rgb(199, 196, 22)" })
+        );
+        object11.scale.set(0.3, 0.3, 0.3);
+        object11.castShadow = true;
+        object11.receiveShadow = true;
+        object11.position.set(0, -1, 0);
+        object11.rotation.x = -Math.PI / 2;
+        scene.add(object11);
+      });
+    
+
+      
+
+      window.addEventListener("resize", function () {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+
+
+
+      light3 = new THREE.DirectionalLight(0xFFFFFF);
+      light3.position.set(10, 6, 30);
+      light3.castShadow = true;
+      light3.shadowCameraVisible = true;
+      light3.shadowDarkness = 1;
+      scene.add(light3);
+
+      light3.shadowCameraRight = 15;
+      light3.shadowCameraLeft = -15;
+      light3.shadowCameraTop = 15;
+      light3.shadowCameraBottom = -15;
+  
+
+      light2 = new THREE.AmbientLight(0xFFFFFF);
+      scene.add(light2)
+
+
+
+      controls = new THREE.OrbitControls( camera, renderer.domElement );
+      controls.update();
+
+    
+
+      animate();
+      
+    }
+
+    function animate() {
+
+      obj.rotateY(0.04);
+      requestAnimationFrame(animate);
+      renderer.render(scene, camera);
+
+    }
+
+    window.onload = init;
+
+
+  </script>
+</body>
+
+</html>
